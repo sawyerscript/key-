@@ -1,43 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Key System</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Key Generator</title>
 </head>
-
-<body class="bg-black text-white flex items-center justify-center h-screen">
-
-  <div class="bg-zinc-900 p-8 rounded-xl w-96 text-center shadow-lg">
-
-    <h1 class="text-xl font-bold mb-2">Reminiscence Zombies Key System</h1>
-    <p class="text-gray-400 mb-6">Complete verification to get your key</p>
-
-    <button onclick="getKey()"
-      class="bg-white text-black px-4 py-2 rounded-lg font-bold w-full hover:bg-gray-300">
-      Get Key
-    </button>
-
-    <p id="status" class="mt-4 text-sm text-gray-400"></p>
-
-    <div id="keyBox" class="mt-4 hidden">
-      <p class="text-green-400 font-bold">Your Key:</p>
-      <div class="bg-black border border-gray-700 p-2 mt-2 rounded" id="key"></div>
-      <button onclick="copyKey()" class="mt-2 text-sm underline">Copy</button>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center w-96">
+        <h1 class="text-2xl font-bold mb-4">Access Key</h1>
+        <div id="key-box" class="bg-gray-700 p-4 rounded mb-4 font-mono text-blue-400 break-all">
+            Click generate to get a key
+        </div>
+        <button onclick="generateKey()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded font-bold transition">Generate</button>
+        <button onclick="copyKey()" class="bg-green-600 hover:bg-green-500 px-6 py-2 rounded font-bold transition ml-2">Copy</button>
     </div>
 
-  </div>
-
-<script>
-async function getKey(){
-  document.getElementById("status").innerText = "Redirecting to verification...";
-  window.location.href = "https://work.ink/2DwH/reminiscence-zombies-easy?callback=https://YOURSERVER.com/callback";
-}
-
-function copyKey(){
-  navigator.clipboard.writeText(document.getElementById("key").innerText);
-  alert("Copied!");
-}
-</script>
-
+    <script>
+        let currentKey = "";
+        function generateKey() {
+            currentKey = 'KEY-' + Math.random().toString(36).substr(2, 12).toUpperCase();
+            document.getElementById('key-box').innerText = currentKey;
+        }
+        function copyKey() {
+            navigator.clipboard.writeText(currentKey);
+            alert("Copied to clipboard!");
+        }
+    </script>
 </body>
 </html>
