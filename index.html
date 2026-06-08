@@ -1,28 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Generation System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Key Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center w-96">
-        <h1 class="text-2xl font-bold mb-4">Access Key</h1>
-        <div id="key-box" class="bg-gray-700 p-4 rounded mb-4 font-mono text-blue-400 break-all">
-            Click generate to get a key
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4 antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+    <div class="relative w-full max-w-md p-8 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-cyan-500/5 overflow-hidden">
+        
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                Key System
+            </h1>
+            <p class="text-sm text-slate-400 mt-2">Generate your access key to use the executor script.</p>
         </div>
-        <button onclick="generateKey()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded font-bold transition">Generate</button>
-        <button onclick="copyKey()" class="bg-green-600 hover:bg-green-500 px-6 py-2 rounded font-bold transition ml-2">Copy</button>
+
+        <div class="space-y-4">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="key-display" 
+                    placeholder="Click 'Generate Key' below..." 
+                    readonly 
+                    class="w-full bg-slate-950/50 border border-slate-800 text-center font-mono text-cyan-400 placeholder-slate-600 text-lg py-4 px-4 rounded-xl tracking-wider focus:outline-none focus:border-cyan-500 transition-all shadow-inner"
+                >
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button 
+                    onclick="generateKey()" 
+                    class="w-full py-3 px-4 font-semibold text-sm bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-950 rounded-xl transition duration-200 active:scale-[0.98] shadow-lg shadow-cyan-500/20 font-semibold"
+                >
+                    Generate Key
+                </button>
+                
+                <button 
+                    id="copy-btn"
+                    onclick="copyKey()" 
+                    disabled
+                    class="w-full py-3 px-4 font-semibold text-sm bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:hover:bg-slate-800 disabled:cursor-not-allowed rounded-xl transition duration-200 active:scale-[0.98]"
+                >
+                    Copy Key
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center mt-6">
+            <span class="text-xs text-slate-500 tracking-wide uppercase">Secure Verification</span>
+        </div>
     </div>
 
     <script>
-        let currentKey = "";
-        function generateKey() {
-            currentKey = 'KEY-' + Math.random().toString(36).substr(2, 12).toUpperCase();
-            document.getElementById('key-box').innerText = currentKey;
+        async function generateKey() {
+            try {
+                // Fetches the JSON file containing valid keys
+                const response = await fetch('keys.json');
+                if (!response.ok) throw new Error('Failed to fetch keys.');
+                
+                const keys = await response.json();
+                
+                // Select a random key from the array
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                
+                // Display the key
+                const keyDisplay = document.getElementById('key-display');
+                keyDisplay.value = randomKey;
+                
+                // Reset copy button status and enable it
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.disabled = false;
+                copyBtn.innerText = 'Copy Key';
+                copyBtn.className = "w-full py-3 px-4 font-semibold text-sm bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl transition duration-200 active:scale-[0.98]";
+                
+            } catch (error) {
+                console.error(error);
+                alert('Error loading the key database. Make sure keys.json is in the same folder.');
+            }
         }
+
         function copyKey() {
-            navigator.clipboard.writeText(currentKey);
-            alert("Copied to clipboard!");
+            const keyDisplay = document.getElementById('key-display');
+            if (!keyDisplay.value) return;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(keyDisplay.value).then(() => {
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.innerText = 'Copied!';
+                // Add temporary success styling
+                copyBtn.className = "w-full py-3 px-4 font-semibold text-sm bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl transition duration-200";
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
         }
     </script>
 </body>
