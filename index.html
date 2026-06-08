@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Key System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white flex items-center justify-center h-screen">
+
+  <div class="bg-zinc-900 p-8 rounded-xl w-96 text-center shadow-lg">
+
+    <h1 class="text-xl font-bold mb-2">Reminiscence Zombies Key System</h1>
+    <p class="text-gray-400 mb-6">Complete verification to get your key</p>
+
+    <button onclick="getKey()"
+      class="bg-white text-black px-4 py-2 rounded-lg font-bold w-full hover:bg-gray-300">
+      Get Key
+    </button>
+
+    <p id="status" class="mt-4 text-sm text-gray-400"></p>
+
+    <div id="keyBox" class="mt-4 hidden">
+      <p class="text-green-400 font-bold">Your Key:</p>
+      <div class="bg-black border border-gray-700 p-2 mt-2 rounded" id="key"></div>
+      <button onclick="copyKey()" class="mt-2 text-sm underline">Copy</button>
+    </div>
+
+  </div>
+
+<script>
+async function getKey(){
+  document.getElementById("status").innerText = "Redirecting to verification...";
+  window.location.href = "https://work.ink/2DwH/reminiscence-zombies-easy?callback=https://YOURSERVER.com/callback";
+}
+
+function copyKey(){
+  navigator.clipboard.writeText(document.getElementById("key").innerText);
+  alert("Copied!");
+}
+</script>
+
+</body>
+</html>
