@@ -5,9 +5,8 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 
-const DB_FILE = "./keys.json";
+const DB_FILE = "./db.json";
 
-// load db
 function loadDB(){
   if (!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, "{}");
   return JSON.parse(fs.readFileSync(DB_FILE));
@@ -17,39 +16,34 @@ function saveDB(db){
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 }
 
-// generate key
-function generateKey(){
+function genKey(){
   return crypto.randomBytes(6).toString("hex").toUpperCase();
 }
 
-// CALLBACK from Work.ink
 app.get("/callback", (req,res)=>{
-  const { device } = req.query; // fingerprint from client
-  const db = loadDB();
+  const { uid } = req.query;
 
-  // already exists
-  if (db[device]){
-    return res.json({ key: db[device] });
+  if (!uid) return res.send("Missing UID");
+
+  let db = loadDB();
+
+  // already generated for this uid
+  if (db[uid]){
+    return res.send(`Your Key: ${db[uid]}`);
   }
 
-  const key = generateKey();
-  db[device] = key;
+  const key = genKey();
+  db[uid] = key;
 
   saveDB(db);
 
-  res.json({ key });
+  res.send(`
+    <h1>Your Key</h1>
+    <p>${key}</p>
+    <script>
+      navigator.clipboard.writeText("${key}");
+    </script>
+  `);
 });
 
-// validate key for Roblox script
-app.post("/validate", (req,res)=>{
-  const { key, device } = req.body;
-  const db = loadDB();
-
-  if (db[device] && db[device] === key){
-    return res.json({ valid: true });
-  }
-
-  return res.json({ valid: false });
-});
-
-app.listen(3000, ()=> console.log("Server running"));
+app.listen(3000, ()=>console.log("running"));
